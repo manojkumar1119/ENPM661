@@ -1,3 +1,10 @@
+###########################################################
+#GIT LINK:
+#https://github.com/manojkumar1119/ENPM661/tree/main/Project2
+###########################################################
+
+
+
 #Libs used
 
 import cv2
@@ -61,6 +68,11 @@ def visualize_canvas(matrix, start_x, start_y, end_x, end_y):
 
     plt.pause(5)
     plt.close()
+
+
+print("\n ----------------------------------------------------------------------")
+print("\n ---------------------------ManojKumar Selvaraj------------------------")
+print("\nGit link : https://github.com/manojkumar1119/ENPM661/tree/main/Project2\n")
 
 
 #Enter starting coodinates
