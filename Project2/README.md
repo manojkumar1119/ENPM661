@@ -31,6 +31,6 @@
 
 6. And the output is saved as a video.
 
-##Example Image for node form 10, 10 to 1191,491
+## Example Image for node form 10, 10 to 1191,491
 
 ![Dijkstra](./images/output.jpg)
