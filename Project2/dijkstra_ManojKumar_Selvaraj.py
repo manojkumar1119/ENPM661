@@ -401,7 +401,24 @@ plot_img =  np.ones(plot_img , dtype=np.uint8)*255
 
 shortest_path = shortest_path[::-1]
 
+#store as video
+print("\nSaving as video...\n")
+
 #Ploting for all frames
 explored_img, path_img = plot_map(plot_img, obstacle_matrix, start_x, start_y, end_x, end_y,closed_list, shortest_path)
 
+video = explored_img + path_img
+
+height, width, _ = video[0].shape
+
+# Define fps and format
+fourcc = cv2.VideoWriter_fourcc(*'XVID')
+out = cv2.VideoWriter('./output_video.avi', fourcc, 120, (width, height))
+
+# Writing
+for image in video:
+    out.write(image)
+
+# Release
+out.release()
 

@@ -31,6 +31,13 @@
 
 6. And the output is saved as a video.
 
-## Example Image for node form 10, 10 to 1191,491
+## Example Image for node from start(10, 10) to goal(1191,491)
 
 ![Dijkstra](./images/output.jpg)
+
+## Legend
+`Black            --->    Walls and clearance area of obstacle`
+`White            --->    Free space`
+`Blue             --->    Explored Nodes`
+`Red              --->    Obstacle`
+`White in Blue    --->    Shortest Path` 
