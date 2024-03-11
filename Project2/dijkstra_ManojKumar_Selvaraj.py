@@ -334,3 +334,74 @@ status = dijkstraAlgo(start_x, start_y, end_x, end_y)
 end = time.time()
 print("Time taken:", (end-start))
 
+#plot using opencv
+def plot_map(plot_img, matrix,start_x,start_y,end_x,end_y, explored_pts, shortest_path):
+
+    #Set walls and clearance as black color
+    for i in range (len(matrix)):
+        for j in range (len(matrix[0])):
+            if(matrix[i][j] == -1):
+                plot_img[i][j] = (0,0,0)
+
+    #set obstacle as red
+    for i in range (len(matrix)):
+        for j in range (len(matrix[0])):
+            if(matrix[i][j] == -2):
+                plot_img[i][j] = (0,0,255)
+
+    #plot start node green and end black color
+    plot_img[start_y][start_x] = (0,255,0)
+    plot_img[end_y][end_x] = (0,0,0)
+
+    #plot explored nodes with blue color
+    explored_img = []
+    index = 0
+    for key,value in explored_pts.items():
+        x,y = key
+        plot_img[y][x] = (255,0,0)
+        temp=plot_img[::-1].copy()
+        if(index%500==0):
+            explored_img.append(temp)
+        index+=1
+    if(len(explored_pts)>0):
+        explored_img.append(temp)
+
+    #plot shortest path with white color
+    path_img = []
+    temp = plot_img.copy()
+    for i in range(len(shortest_path)-1):
+        pt1 = shortest_path[i]
+        pt2 = shortest_path[i + 1]
+        cv2.line(temp, (pt1[0], pt1[1]), (pt2[0],pt2[1]), (255,255,255), 2)
+    temp = temp[::-1]
+    path_img.append(temp)
+
+    #Display image
+    #cv2.imshow("shortest_path", temp)
+    #cv2.waitKey(0)
+    cv2.imwrite("shortest_path.jpg", temp)
+   
+    #Robot tracing the shortest path from start t0 goal
+    index = 0
+    temp=path_img[0][::-1].copy()
+    for i in range(len(shortest_path)-1):
+        pt1 = shortest_path[i]
+        pt2 = shortest_path[i + 1]
+        cv2.circle(temp,(pt2[0],pt2[1]), 1, (0,165,255), 1)
+        cv2.line(temp, (pt1[0], pt1[1]), (pt2[0],pt2[1]), (255,0,0), 2)
+        if(index %1 ==0 or i==len(shortest_path)-2):
+            temp2 = temp[::-1].copy()
+            path_img.append(temp2)
+
+    return explored_img, path_img
+    
+#define image size
+plot_img = (Map_Height , Map_Width, 3)
+plot_img =  np.ones(plot_img , dtype=np.uint8)*255
+
+shortest_path = shortest_path[::-1]
+
+#Ploting for all frames
+explored_img, path_img = plot_map(plot_img, obstacle_matrix, start_x, start_y, end_x, end_y,closed_list, shortest_path)
+
+
