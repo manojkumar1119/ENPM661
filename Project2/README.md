@@ -37,7 +37,11 @@
 
 ## Legend
 `Black            --->    Walls and clearance area of obstacle`
+
 `White            --->    Free space`
+
 `Blue             --->    Explored Nodes`
+
 `Red              --->    Obstacle`
+
 `White in Blue    --->    Shortest Path` 
