@@ -53,6 +53,30 @@ def shift_line_equation(eq, clearance):
 
     return a, b, c
 
+#function to normalize -ve angles
+def normalize_angle(theta):
+    #-ve angles
+    while theta < 0:
+        theta += 360
+
+    #1 rotation angles
+    while theta >= 360:
+        theta -= 360
+
+    return theta
+
+#compare both angles
+def check_angles(theta1, theta2):
+    return normalize_angle(theta1) == normalize_angle(theta2)
+
+#Function to check pt is in obs
+def in_obstacle(x, y):
+    global obs_matrix
+    if(obs_matrix[y][x]!=0):
+        return True
+    else:
+        return False
+
 #Matrix values
 # 0--> Free space
 #-1--> Clearance 5 mm + robot clearance 5mm
@@ -137,12 +161,12 @@ def visualize_canvas(matrix):
     plt.show()
 
 #Enter start coords
-start_x = int(input("Enter Start x coordinates:"))
-start_y = int(input("Enter Start y coordinates:"))
+Strt_x = int(input("Enter Start x coordinates:"))
+Strt_y = int(input("Enter Start y coordinates:"))
 
 #Enter goal coords
-end_x = int(input("Enter End x coordinates:"))
-end_y = int(input("Enter End y coordinates:"))
+End_x = int(input("Enter End x coordinates:"))
+End_y = int(input("Enter End y coordinates:"))
 
 # Defining the size of the map
 Canvas_Width = 1200 
@@ -178,3 +202,21 @@ visualize_canvas(obs_matrix)
 
 #Invert to make it same as cartesian coords
 obs_matrix = obs_matrix[::-1]
+
+#Check if strt and goal in obs
+if(in_obstacle(Strt_x, Strt_y) and in_obstacle(End_x, End_y)):
+    print("Both Start and End pts are in obstacle")
+    exit(0)
+
+elif(in_obstacle(Strt_x, Strt_y)):
+    print("Start pt in obstacle")
+    exit(0)
+
+elif(in_obstacle(End_x, End_y)):
+    print("End pt in obstacle")
+    exit(0)
+
+else:
+    print("\nStart X:",Strt_x," Start Y:",Strt_y)
+    print("\nEnd X:",End_x," End Y:",End_y)
+
