@@ -176,3 +176,5 @@ obs_matrix = createMap(obs_matrix , Canvas_Width, Canvas_Height, clearance_robot
 
 visualize_canvas(obs_matrix)
 
+#Invert to make it same as cartesian coords
+obs_matrix = obs_matrix[::-1]
