@@ -15,13 +15,12 @@ class Node:
         self.y = y
         self.theta = theta
 
-        self.neighbors = {}
         self.parentNode = None
-        self.distance = float('inf')
+        self.total_cost = float('inf')
 
     #lt
     def __lt__(self, other):
-        return self.distance < other.distance
+        return self.total_cost < other.total_cost
 
     #hash
     def __hash__(self):
@@ -182,12 +181,21 @@ def visualize_canvas(matrix):
     plt.show()
 
 #Enter start coords
-Strt_x = int(input("Enter Start x coordinates:"))
-Strt_y = int(input("Enter Start y coordinates:"))
+#Strt_x = int(input("Enter Start x coordinates:"))
+Strt_x = 15
+#Strt_y = int(input("Enter Start y coordinates:"))
+Strt_y = 15
+#Strt_theta = int(input("Enter Start degrees:"))
+Strt_theta = 90
 
 #Enter goal coords
-End_x = int(input("Enter End x coordinates:"))
-End_y = int(input("Enter End y coordinates:"))
+#End_x = int(input("Enter End x coordinates:"))
+End_x = 15
+#End_y = int(input("Enter End y coordinates:"))
+End_y = 20
+#End_theta = int(input("Enter End degrees:"))
+End_theta = 90
+
 
 # Defining the size of the map
 Canvas_Width = 1200 
@@ -197,13 +205,15 @@ Canvas_Height = 500
 obs_matrix = np.zeros((Canvas_Height, Canvas_Width))
 
 #Enter radius of robot
-radius = int(input("Enter radius of robot:"))
+#radius = int(input("Enter radius of robot:"))
+radius = 5
 
 #clearance of robot
 clearance_robot = radius
 
 #Enter clearance of robot
-clearance = int(input("Enter clearance of robot:"))
+#clearance = int(input("Enter clearance of robot:"))
+clearance =5 
 
 #clearance map
 clearance_map = clearance
@@ -219,7 +229,7 @@ hex_eqn, hex_eqn_c = calculate_hex_line(hexagon_vertices, (clearance_robot+clear
 #CAlling a function whic creates the map
 obs_matrix = createMap(obs_matrix , Canvas_Width, Canvas_Height, clearance_robot, clearance_map, hex_eqn, hex_eqn_c)
 
-visualize_canvas(obs_matrix)
+#visualize_canvas(obs_matrix)
 
 #Invert to make it same as cartesian coords
 obs_matrix = obs_matrix[::-1]
@@ -241,20 +251,13 @@ else:
     print("\nStart X:",Strt_x," Start Y:",Strt_y)
     print("\nEnd X:",End_x," End Y:",End_y)
 
-#define step size as 10 (L)
-step_size = 10
-
-#c_s = ((2,3,-60),5)
-#g = (8,9)
-
-#Define action set
-def action_dict(step_size):
-    action_dict = {1:"{:.1f}".format((step_size,0,0),step_size),
-               2:"{.1f}".format((step_size*np.cos(np.pi/6),step_size*np.sin(np.pi/6),30), step_size),
-               3:"{.1f}".format((step_size*np.cos(np.pi/3),step_size*np.sin(np.pi/3),60), step_size),
-               4:"{.1f}".format((step_size*np.cos(-np.pi/6),step_size*np.sin(-np.pi/6),-30), step_size),
-               5:"{.1f}".format((step_size*np.cos(-np.pi/3),step_size*np.sin(-np.pi/3),-60), step_size)}
-    # print(action_dict)
+#action set
+def action_func(step_size):
+    action_dict = {1:((step_size,0,0),step_size),
+               2:((step_size*np.cos(np.pi/6),step_size*np.sin(np.pi/6),30), step_size),
+               3:((step_size*np.cos(np.pi/3),step_size*np.sin(np.pi/3),60), step_size),
+               4:((step_size*np.cos(-np.pi/6),step_size*np.sin(-np.pi/6),-30), step_size),
+               5:((step_size*np.cos(-np.pi/3),step_size*np.sin(-np.pi/3),-60), step_size)}
     return action_dict
 
 
@@ -265,23 +268,23 @@ def child(current_state, current_action, list, goal):
     cost = current_action[1]+cost2_go
     # print(cost)
     child_state = ((current_node),cost)
-    bool_obstacle = in_obstacle(current_node[0], current_node[1])    #inobstacle call
+    bool_obstacle = in_obstacle(int(current_node[0]), int(current_node[1]))    #inobstacle call
     if bool_obstacle == False:
         list.append(child_state)
     return list
 
 def action(current_state, goal):
+    global action_set
     list = []
-    # print(action_dict[1])
-    current_action = action_dict[1]
+    current_action = action_set[1]
     list = child(current_state, current_action, list, goal)
-    current_action = action_dict[2]
+    current_action = action_set[2]
     list = child(current_state, current_action, list, goal)
-    current_action = action_dict[3]
+    current_action = action_set[3]
     list = child(current_state, current_action, list, goal)
-    current_action = action_dict[4]
+    current_action = action_set[4]
     list = child(current_state, current_action, list, goal)
-    current_action = action_dict[5]
+    current_action = action_set[5]
     list = child(current_state, current_action, list, goal)
     return list
 
@@ -297,7 +300,7 @@ def goal_thershold(current_state, goal):
 #l = action(c_s, g)
 #print(l)
 
-visitedMatrix = np.zeros((Canvas_Height*2, Canvas_Width*2),12)
+visitedMatrix = np.zeros((Canvas_Height*2, Canvas_Width*2, 12))
 
 #Finding duplicate nodes
 def find_duplicatenodes(x, y, theta):
@@ -308,17 +311,20 @@ def find_duplicatenodes(x, y, theta):
     threshold = 0.5
 
     #Rounding off
-    new_X = roundoff(x) / threshold
-    new_Y = roundoff(y) / threshold
- 
+    new_X = int(roundOff(x) / threshold)
+    new_Y = int(roundOff(y) / threshold)
 
-    if(visitedMatrix[new_X][new_Y] == 0):
-        visitedMatrix[new_X][new_Y] = 1
-        return True
-    else:
+    new_theta = normalize_angle(theta) // 30
+
+    #print(new_X, new_Y, new_theta)
+
+    if(visitedMatrix[new_X][new_Y][new_theta] == 0):
+        visitedMatrix[new_X][new_Y][new_theta] = 1
         return False
+    else:
+        return True
 
-def rounoff(val):
+def roundOff(val):
 
     int_part = int(val)
     dec_part = val - int_part
@@ -332,7 +338,97 @@ def rounoff(val):
     else:
         return int_part + 1
 
-def A_starAlgo():
+def A_starAlgo(Strt_x, Strt_y, Strt_theta, End_x, End_y, End_theta):
+
+    goal = (End_x, End_y, End_theta)
+
+    #creating open list
+    open_list = []
+    open_list_dict = {}
+
+    closed_list = {}
+
+    #Push strt node to open _ lst
+    start_node = Node(Strt_x, Strt_y, Strt_theta)
+
+    start_node.total_cost= ((goal[0]-Strt_x)**2 + (goal[1]-Strt_y)**2 )**0.5
+
+    heapq.heappush(open_list, (start_node.total_cost, start_node))
+
+    open_list_dict[(start_node.x, start_node.y , start_node.theta)] = start_node.total_cost
+ 
+    #define step size as 10 (L)
+    step_size = 10.0
+
+    global action_set
+
+    action_set = action_func(step_size)
+
+    while(len(open_list)):
+
+        #Pop from open list
+        cur_cost, cur_Node = heapq.heappop(open_list)
+
+        current_Node = ((cur_Node.x, cur_Node.y, cur_Node.theta), cur_cost)
+
+        #Checking for goal node
+        if(goal_thershold(current_Node, goal) == True):
+            print("Goal Node reached.....")
+            #shortest_path = backTracking(cur_Node, shortest_path)
+            return True
+
+        #check if the node is in closed list
+        if (cur_Node.x, cur_Node.y , cur_Node.theta) in closed_list:
+            continue
+
+        #Append to closed list
+        closed_list[(cur_Node.x, cur_Node.y , cur_Node.theta)] = True
+
+        #creating child
+        child = action(current_Node, goal)
+
+        #Iterating all child
+        for tmp_node, child_cost in child:
+            print("In child\n")
+            child_node = (float("{:.1f}".format(tmp_node[0])), float("{:.1f}".format(tmp_node[1])), tmp_node[2])
+            #check in visited matrix
+            if find_duplicatenodes(child_node[0], child_node[1], child_node[2]):
+                print("In visited matrix")
+                #check if child is present in open_list
+                if (child_node[0], child_node[1], child_node[2]) in open_list_dict:
+                    print("In open list")
+
+                    #check for cost
+                    if child_cost < open_list_dict[(child_node[0], child_node[1], child_node[2])] :
+
+                        open_list_dict[(child_node[0], child_node[1], child_node[2])]  = child_cost
+
+                else:
+                    print("Addd to open")
+
+                    open_list_dict[(child_node[0], child_node[1] , child_node[2])] = child_cost
+                
+                
+            Child_Node = Node(child_node[0], child_node[1] ,child_node[2])
+            Child_Node.total_cost = child_cost
+            Child_Node.parentNode = cur_Node
+
+            heapq.heappush(open_list, (Child_Node.total_cost, Child_Node))
+
+action_set = {}
+A_starAlgo(Strt_x, Strt_y, Strt_theta, End_x, End_y, End_theta)
+            
+
+
+
+
+
+
+
+        
+
+
+
 
 
 
