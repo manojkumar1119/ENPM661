@@ -6,6 +6,27 @@ import heapq
 import time
 import matplotlib.pyplot as plt
 
+#Class Node
+class Node:
+
+    #constructor init
+    def __init__(self, x ,y, theta):
+        self.x = x
+        self.y = y
+        self.theta = theta
+
+        self.neighbors = {}
+        self.parentNode = None
+        self.distance = float('inf')
+
+    #lt
+    def __lt__(self, other):
+        return self.distance < other.distance
+
+    #hash
+    def __hash__(self):
+        return hash((self.x, self.y))
+    
 #Calculating ax + by + c =0
 def calculate_line_equation(pt1, pt2):
 
@@ -219,4 +240,101 @@ elif(in_obstacle(End_x, End_y)):
 else:
     print("\nStart X:",Strt_x," Start Y:",Strt_y)
     print("\nEnd X:",End_x," End Y:",End_y)
+
+#define step size as 10 (L)
+step_size = 10
+
+#c_s = ((2,3,-60),5)
+#g = (8,9)
+
+#Define action set
+def action_dict(step_size):
+    action_dict = {1:"{:.1f}".format((step_size,0,0),step_size),
+               2:"{.1f}".format((step_size*np.cos(np.pi/6),step_size*np.sin(np.pi/6),30), step_size),
+               3:"{.1f}".format((step_size*np.cos(np.pi/3),step_size*np.sin(np.pi/3),60), step_size),
+               4:"{.1f}".format((step_size*np.cos(-np.pi/6),step_size*np.sin(-np.pi/6),-30), step_size),
+               5:"{.1f}".format((step_size*np.cos(-np.pi/3),step_size*np.sin(-np.pi/3),-60), step_size)}
+    # print(action_dict)
+    return action_dict
+
+
+def child(current_state, current_action, list, goal):
+    current_node = (current_state[0][0]+current_action[0][0], current_state[0][1]+current_action[0][1], current_state[0][2]+current_action[0][2])
+    cost2_go = ((goal[0]-current_node[0])**2 + (goal[1]-current_node[1])**2 )**0.5
+    # print(dist)
+    cost = current_action[1]+cost2_go
+    # print(cost)
+    child_state = ((current_node),cost)
+    bool_obstacle = in_obstacle(current_node[0], current_node[1])    #inobstacle call
+    if bool_obstacle == False:
+        list.append(child_state)
+    return list
+
+def action(current_state, goal):
+    list = []
+    # print(action_dict[1])
+    current_action = action_dict[1]
+    list = child(current_state, current_action, list, goal)
+    current_action = action_dict[2]
+    list = child(current_state, current_action, list, goal)
+    current_action = action_dict[3]
+    list = child(current_state, current_action, list, goal)
+    current_action = action_dict[4]
+    list = child(current_state, current_action, list, goal)
+    current_action = action_dict[5]
+    list = child(current_state, current_action, list, goal)
+    return list
+
+def goal_thershold(current_state, goal):
+    current_node = (current_state[0][0], current_state[0][1], current_state[0][2])
+    goal_dist = ((goal[0]-current_node[0])**2 + (goal[1]-current_node[1])**2 )**0.5
+    if goal_dist <= 1.5 and normalize_angle(current_node[2]) == normalize_angle(goal[2]):
+        return True
+    else:
+        return False 
+
+#action_dict = action_dict(step_size)
+#l = action(c_s, g)
+#print(l)
+
+visitedMatrix = np.zeros((Canvas_Height*2, Canvas_Width*2),12)
+
+#Finding duplicate nodes
+def find_duplicatenodes(x, y, theta):
+
+    global visitedMatrix
+
+    #Theshold 
+    threshold = 0.5
+
+    #Rounding off
+    new_X = roundoff(x) / threshold
+    new_Y = roundoff(y) / threshold
+ 
+
+    if(visitedMatrix[new_X][new_Y] == 0):
+        visitedMatrix[new_X][new_Y] = 1
+        return True
+    else:
+        return False
+
+def rounoff(val):
+
+    int_part = int(val)
+    dec_part = val - int_part
+
+    if dec_part < 0.25:
+        return int_part
+    
+    elif dec_part < 0.75:
+        return int_part + 0.5
+
+    else:
+        return int_part + 1
+
+def A_starAlgo():
+
+
+
+
 
