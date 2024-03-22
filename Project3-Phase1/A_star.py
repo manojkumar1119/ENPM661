@@ -5,6 +5,8 @@ import numpy as np
 import heapq
 import time
 import matplotlib.pyplot as plt
+import pygame
+import sys
 
 #Class Node
 class Node:
@@ -14,9 +16,8 @@ class Node:
         self.x = x
         self.y = y
         self.theta = theta
-
         self.parentNode = None
-        self.total_cost = float('inf')
+        self.total_cost = 0
 
     #lt
     def __lt__(self, other):
@@ -24,7 +25,7 @@ class Node:
 
     #hash
     def __hash__(self):
-        return hash((self.x, self.y))
+        return hash((self.x, self.y, self.theta))
     
 #Calculating ax + by + c =0
 def calculate_line_equation(pt1, pt2):
@@ -176,7 +177,11 @@ def visualize_canvas(matrix):
     plt.matshow(matrix_np, cmap=cmap)
 
     plt.gca().invert_yaxis()
+   
+    plt.axis('off')
     
+    # Save the plot as an image
+    plt.savefig('Canvas.png')
     # Show the plot
     plt.show()
 
@@ -186,15 +191,15 @@ Strt_x = 15
 #Strt_y = int(input("Enter Start y coordinates:"))
 Strt_y = 15
 #Strt_theta = int(input("Enter Start degrees:"))
-Strt_theta = 90
+Strt_theta = 0
 
 #Enter goal coords
 #End_x = int(input("Enter End x coordinates:"))
-End_x = 15
+End_x = 25
 #End_y = int(input("Enter End y coordinates:"))
-End_y = 20
+End_y = 15
 #End_theta = int(input("Enter End degrees:"))
-End_theta = 90
+End_theta = 0
 
 
 # Defining the size of the map
@@ -251,42 +256,41 @@ else:
     print("\nStart X:",Strt_x," Start Y:",Strt_y)
     print("\nEnd X:",End_x," End Y:",End_y)
 
-#action set
-def action_func(step_size):
-    action_dict = {1:((step_size,0,0),step_size),
-               2:((step_size*np.cos(np.pi/6),step_size*np.sin(np.pi/6),30), step_size),
-               3:((step_size*np.cos(np.pi/3),step_size*np.sin(np.pi/3),60), step_size),
-               4:((step_size*np.cos(-np.pi/6),step_size*np.sin(-np.pi/6),-30), step_size),
-               5:((step_size*np.cos(-np.pi/3),step_size*np.sin(-np.pi/3),-60), step_size)}
+def action_func(step_size, current_state):#########################
+    action_dict = {1:((step_size*np.cos(current_state[0][2]),step_size*np.sin(current_state[0][2]),30), step_size),
+               2:((step_size*np.cos((current_state[0][2])+np.pi/6),step_size*np.sin((current_state[0][2])+np.pi/6),30), step_size),
+               3:((step_size*np.cos((current_state[0][2])+np.pi/3),step_size*np.sin((current_state[0][2])+np.pi/3),60), step_size),
+               4:((step_size*np.cos((current_state[0][2])-np.pi/6),step_size*np.sin((current_state[0][2])-np.pi/6),-30), step_size),
+               5:((step_size*np.cos((current_state[0][2])-np.pi/3),step_size*np.sin((current_state[0][2])-np.pi/3),-60), step_size)}
     return action_dict
 
 
-def child(current_state, current_action, list, goal):
-    current_node = (current_state[0][0]+current_action[0][0], current_state[0][1]+current_action[0][1], current_state[0][2]+current_action[0][2])
+def child(current_state, current_action, lst, goal):
+    current_node = (current_state[0][0]+current_action[0][0], current_state[0][1]+current_action[0][1], normalize_angle(current_state[0][2]+current_action[0][2]))
     cost2_go = ((goal[0]-current_node[0])**2 + (goal[1]-current_node[1])**2 )**0.5
     # print(dist)
-    cost = current_action[1]+cost2_go
+    cost = current_action[1]+cost2_go+current_state[1]
     # print(cost)
     child_state = ((current_node),cost)
     bool_obstacle = in_obstacle(int(current_node[0]), int(current_node[1]))    #inobstacle call
     if bool_obstacle == False:
-        list.append(child_state)
-    return list
+        lst.append(child_state)
+    return lst
 
-def action(current_state, goal):
-    global action_set
-    list = []
+def action(current_state, goal, step_size):##########################
+    action_set = action_func(step_size, current_state)
+    lst = []
     current_action = action_set[1]
-    list = child(current_state, current_action, list, goal)
+    lst = child(current_state, current_action, lst, goal)
     current_action = action_set[2]
-    list = child(current_state, current_action, list, goal)
+    lst = child(current_state, current_action, lst, goal)
     current_action = action_set[3]
-    list = child(current_state, current_action, list, goal)
+    lst = child(current_state, current_action, lst, goal)
     current_action = action_set[4]
-    list = child(current_state, current_action, list, goal)
+    lst = child(current_state, current_action, lst, goal)
     current_action = action_set[5]
-    list = child(current_state, current_action, list, goal)
-    return list
+    lst = child(current_state, current_action, lst, goal)
+    return lst
 
 def goal_thershold(current_state, goal):
     current_node = (current_state[0][0], current_state[0][1], current_state[0][2])
@@ -296,11 +300,7 @@ def goal_thershold(current_state, goal):
     else:
         return False 
 
-#action_dict = action_dict(step_size)
-#l = action(c_s, g)
-#print(l)
-
-visitedMatrix = np.zeros((Canvas_Height*2, Canvas_Width*2, 12))
+visitedMatrix = np.zeros((Canvas_Width*2, Canvas_Height*2, 12))
 
 #Finding duplicate nodes
 def find_duplicatenodes(x, y, theta):
@@ -316,13 +316,11 @@ def find_duplicatenodes(x, y, theta):
 
     new_theta = normalize_angle(theta) // 30
 
-    #print(new_X, new_Y, new_theta)
-
     if(visitedMatrix[new_X][new_Y][new_theta] == 0):
         visitedMatrix[new_X][new_Y][new_theta] = 1
-        return False
-    else:
         return True
+    else:
+        return False
 
 def roundOff(val):
 
@@ -338,99 +336,151 @@ def roundOff(val):
     else:
         return int_part + 1
 
+#func to perform back tracking
+def back_tracking(Node):
+
+    final_path =[]
+    print("\nFinal path is:\n")
+
+    while Node.parentNode != None:
+        #print("--> ",Node.x, Node.y, "\n")
+        final_path.append((Node.x, Node.y,Node.theta))
+        Node = Node.parentNode
+    #print(Node.x, Node.y, "\n")
+    final_path.append((Node.x, Node.y, Node.theta))
+    return final_path
+
 def A_starAlgo(Strt_x, Strt_y, Strt_theta, End_x, End_y, End_theta):
+
+    global final_path
 
     goal = (End_x, End_y, End_theta)
 
     #creating open list
     open_list = []
-    open_list_dict = {}
 
     closed_list = {}
 
     #Push strt node to open _ lst
     start_node = Node(Strt_x, Strt_y, Strt_theta)
 
-    start_node.total_cost= ((goal[0]-Strt_x)**2 + (goal[1]-Strt_y)**2 )**0.5
+    start_node.total_cost = 0
 
     heapq.heappush(open_list, (start_node.total_cost, start_node))
 
-    open_list_dict[(start_node.x, start_node.y , start_node.theta)] = start_node.total_cost
- 
     #define step size as 10 (L)
     step_size = 10.0
 
     global action_set
 
-    action_set = action_func(step_size)
+    while len(open_list):
 
-    while(len(open_list)):
+            #Pop from open list
+            cur_cost, cur_Node = heapq.heappop(open_list)
 
-        #Pop from open list
-        cur_cost, cur_Node = heapq.heappop(open_list)
+            current_Node = ((cur_Node.x, cur_Node.y, cur_Node.theta), cur_cost)
 
-        current_Node = ((cur_Node.x, cur_Node.y, cur_Node.theta), cur_cost)
+            #print("curr node", cur_Node.x, cur_Node.y, cur_Node.theta)
 
-        #Checking for goal node
-        if(goal_thershold(current_Node, goal) == True):
-            print("Goal Node reached.....")
-            #shortest_path = backTracking(cur_Node, shortest_path)
-            return True
+            #Checking for goal node
+            if(goal_thershold(current_Node, goal) == True):
+                print("Goal Node reached.....")
+                
+                final_path = back_tracking(cur_Node)
+                return True
 
-        #check if the node is in closed list
-        if (cur_Node.x, cur_Node.y , cur_Node.theta) in closed_list:
-            continue
+            #creating child
+            child = action(current_Node, goal, step_size)
 
-        #Append to closed list
-        closed_list[(cur_Node.x, cur_Node.y , cur_Node.theta)] = True
+            for tmp_node, child_cost in child:
 
-        #creating child
-        child = action(current_Node, goal)
+                child_node = (float("{:.1f}".format(tmp_node[0])), float("{:.1f}".format(tmp_node[1])), tmp_node[2])
+                
+                #check if the node is in closed list
+                if (roundOff(child_node[0]), roundOff(child_node[1])) in closed_list:
+                    continue
 
-        #Iterating all child
-        for tmp_node, child_cost in child:
-            print("In child\n")
-            child_node = (float("{:.1f}".format(tmp_node[0])), float("{:.1f}".format(tmp_node[1])), tmp_node[2])
-            #check in visited matrix
-            if find_duplicatenodes(child_node[0], child_node[1], child_node[2]):
-                print("In visited matrix")
-                #check if child is present in open_list
-                if (child_node[0], child_node[1], child_node[2]) in open_list_dict:
-                    print("In open list")
+                #Append to closed list
+                closed_list[(roundOff(child_node[0]), roundOff(child_node[1]))] = True
 
-                    #check for cost
-                    if child_cost < open_list_dict[(child_node[0], child_node[1], child_node[2])] :
-
-                        open_list_dict[(child_node[0], child_node[1], child_node[2])]  = child_cost
+                if find_duplicatenodes(child_node[0], child_node[1], child_node[2]):
+                    Child_Node = Node(child_node[0], child_node[1] ,child_node[2])
+                    Child_Node.total_cost = child_cost
+                    Child_Node.parentNode = cur_Node
+                    heapq.heappush(open_list, (Child_Node.total_cost, Child_Node))
 
                 else:
-                    print("Addd to open")
-
-                    open_list_dict[(child_node[0], child_node[1] , child_node[2])] = child_cost
-                
-                
-            Child_Node = Node(child_node[0], child_node[1] ,child_node[2])
-            Child_Node.total_cost = child_cost
-            Child_Node.parentNode = cur_Node
-
-            heapq.heappush(open_list, (Child_Node.total_cost, Child_Node))
+                    if(child_cost < cur_cost):
+                        Child_Node = Node(child_node[0], child_node[1] ,child_node[2])
+                        Child_Node.total_cost = child_cost
+                        Child_Node.parentNode = cur_Node
+                        heapq.heappush(open_list, (Child_Node.total_cost, Child_Node))
+    return False
 
 action_set = {}
-A_starAlgo(Strt_x, Strt_y, Strt_theta, End_x, End_y, End_theta)
-            
 
+#Final path list
+final_path = []
 
+path = A_starAlgo(Strt_x, Strt_y, Strt_theta, End_x, End_y, End_theta)
 
+if(path==False):
+    print("Path not found")
 
+else:
+    final_path = final_path[::-1]
+    print("Final Path is:\n")
+    for x,y,theta in final_path:
+        print(x,y,theta)
 
+# Initialize Pygame
+pygame.init()
 
+# Set up the screen
+screen = pygame.display.set_mode((Canvas_Width, Canvas_Height))
+pygame.display.set_caption("A* Algorithm")
 
-        
+# Define the matrix size
+num_rows = Canvas_Width
+num_cols = Canvas_Height
 
+# Set up colors
+BLACK = (0, 0, 0)
+WHITE = (255, 255, 255)
+RED = (255, 0, 0)
+GREEN = (0, 255, 0)
+BLUE = (0, 0, 255)
 
+obs_matrix = obs_matrix[::-1]
+# Main loop
+running = True
 
+while running:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
 
+    # Clear the screen
+    screen.fill(WHITE)
 
+    # Plot the matrix
+    for x in range(num_cols):
+        for y in range(num_rows):
+            value = obs_matrix[x][y]
+            color = None
+            if value == 0:
+                color = WHITE
+            elif value == -1:
+                color = BLACK
+            elif value == -2:
+                color = RED
 
+            if color:
+                pygame.draw.rect(screen, color, (y,x,1,1))
 
+    # Update the display
+    pygame.display.flip()
 
+# Quit Pygame
+pygame.quit()
+sys.exit()
