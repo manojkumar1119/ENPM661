@@ -195,9 +195,9 @@ Strt_theta = 0
 
 #Enter goal coords
 #End_x = int(input("Enter End x coordinates:"))
-End_x = 25
+End_x = 1150
 #End_y = int(input("Enter End y coordinates:"))
-End_y = 15
+End_y = 450
 #End_theta = int(input("Enter End degrees:"))
 End_theta = 0
 
@@ -340,7 +340,6 @@ def roundOff(val):
 def back_tracking(Node):
 
     final_path =[]
-    print("\nFinal path is:\n")
 
     while Node.parentNode != None:
         #print("--> ",Node.x, Node.y, "\n")
@@ -369,7 +368,7 @@ def A_starAlgo(Strt_x, Strt_y, Strt_theta, End_x, End_y, End_theta):
     heapq.heappush(open_list, (start_node.total_cost, start_node))
 
     #define step size as 10 (L)
-    step_size = 10.0
+    step_size = 1.0
 
     global action_set
 
@@ -424,6 +423,14 @@ final_path = []
 
 path = A_starAlgo(Strt_x, Strt_y, Strt_theta, End_x, End_y, End_theta)
 
+plot_path = []
+# Function to convert coords for pygame
+def conv_coords(x, y):
+    convd_x = x
+    convd_y = Canvas_Height - y 
+    return convd_x, convd_y
+
+
 if(path==False):
     print("Path not found")
 
@@ -431,7 +438,9 @@ else:
     final_path = final_path[::-1]
     print("Final Path is:\n")
     for x,y,theta in final_path:
+        plot_path.append(conv_coords(roundOff(x),roundOff(y)))
         print(x,y,theta)
+
 
 # Initialize Pygame
 pygame.init()
@@ -477,6 +486,14 @@ while running:
 
             if color:
                 pygame.draw.rect(screen, color, (y,x,1,1))
+
+    #Display start and goal node
+    pygame.draw.circle(screen, BLUE, (conv_coords(Strt_x, Strt_y)), 10)
+    pygame.draw.circle(screen, GREEN, (conv_coords(End_x, End_y)), 10)
+
+
+    #Displaying final path
+    pygame.draw.lines(screen, RED, False, plot_path, 2)
 
     # Update the display
     pygame.display.flip()
