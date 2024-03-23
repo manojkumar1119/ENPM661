@@ -92,6 +92,10 @@ def check_angles(theta1, theta2):
 
 #Function to check pt is in obs
 def in_obstacle(x, y):
+
+    if(x >= Canvas_Width or y>= Canvas_Height):
+        return True
+
     global obs_matrix
     if(obs_matrix[y][x]!=0):
         return True
@@ -187,9 +191,9 @@ def visualize_canvas(matrix):
 
 #Enter start coords
 #Strt_x = int(input("Enter Start x coordinates:"))
-Strt_x = 15
+Strt_x = 50
 #Strt_y = int(input("Enter Start y coordinates:"))
-Strt_y = 15
+Strt_y = 50
 #Strt_theta = int(input("Enter Start degrees:"))
 Strt_theta = 0
 
@@ -257,21 +261,21 @@ else:
     print("\nEnd X:",End_x," End Y:",End_y)
 
 def action_func(step_size, current_state):#########################
-    action_dict = {1:((step_size*np.cos(current_state[0][2]),step_size*np.sin(current_state[0][2]),30), step_size),
-               2:((step_size*np.cos((current_state[0][2])+np.pi/6),step_size*np.sin((current_state[0][2])+np.pi/6),30), step_size),
-               3:((step_size*np.cos((current_state[0][2])+np.pi/3),step_size*np.sin((current_state[0][2])+np.pi/3),60), step_size),
-               4:((step_size*np.cos((current_state[0][2])-np.pi/6),step_size*np.sin((current_state[0][2])-np.pi/6),-30), step_size),
-               5:((step_size*np.cos((current_state[0][2])-np.pi/3),step_size*np.sin((current_state[0][2])-np.pi/3),-60), step_size)}
+    action_dict = {1:((step_size*np.cos(np.radians(current_state[0][2])),step_size*np.sin(np.radians(current_state[0][2])),0), step_size),
+               2:((step_size*np.cos(np.radians(current_state[0][2])+np.pi/6),step_size*np.sin(np.radians(current_state[0][2])+np.pi/6),30), step_size),
+               3:((step_size*np.cos(np.radians(current_state[0][2])+np.pi/3),step_size*np.sin(np.radians(current_state[0][2])+np.pi/3),60), step_size),
+               4:((step_size*np.cos(np.radians(current_state[0][2])-np.pi/6),step_size*np.sin(np.radians(current_state[0][2])-np.pi/6),-30), step_size),
+               5:((step_size*np.cos(np.radians(current_state[0][2])-np.pi/3),step_size*np.sin(np.radians(current_state[0][2])-np.pi/3),-60), step_size)}
     return action_dict
 
 
 def child(current_state, current_action, lst, goal):
     current_node = (current_state[0][0]+current_action[0][0], current_state[0][1]+current_action[0][1], normalize_angle(current_state[0][2]+current_action[0][2]))
-    cost2_go = ((goal[0]-current_node[0])**2 + (goal[1]-current_node[1])**2 )**0.5
+    cost2_go = ( (goal[0]-current_state[0][0])**2 + (goal[1]-current_state[0][1])**2 )**0.5
     # print(dist)
-    cost = current_action[1]+cost2_go+current_state[1]
+    cost = roundOff(current_action[1]+cost2_go+current_state[1])
     # print(cost)
-    child_state = ((current_node),cost)
+    child_state = (current_node,cost)
     bool_obstacle = in_obstacle(int(current_node[0]), int(current_node[1]))    #inobstacle call
     if bool_obstacle == False:
         lst.append(child_state)
@@ -295,7 +299,7 @@ def action(current_state, goal, step_size):##########################
 def goal_thershold(current_state, goal):
     current_node = (current_state[0][0], current_state[0][1], current_state[0][2])
     goal_dist = ((goal[0]-current_node[0])**2 + (goal[1]-current_node[1])**2 )**0.5
-    if goal_dist <= 1.5 and normalize_angle(current_node[2]) == normalize_angle(goal[2]):
+    if (goal_dist <= 1.5) and (normalize_angle(current_node[2]) == normalize_angle(goal[2])):
         return True
     else:
         return False 
@@ -357,8 +361,11 @@ def A_starAlgo(Strt_x, Strt_y, Strt_theta, End_x, End_y, End_theta):
 
     #creating open list
     open_list = []
+    open_list_dict = {}
 
     closed_list = {}
+
+    all_nodes = []
 
     #Push strt node to open _ lst
     start_node = Node(Strt_x, Strt_y, Strt_theta)
@@ -368,11 +375,16 @@ def A_starAlgo(Strt_x, Strt_y, Strt_theta, End_x, End_y, End_theta):
     heapq.heappush(open_list, (start_node.total_cost, start_node))
 
     #define step size as 10 (L)
-    step_size = 1.0
+    step_size = 10.0
 
     global action_set
 
+    #index = 0
     while len(open_list):
+
+            #if (index == 3):
+            #    break
+            #index+=1
 
             #Pop from open list
             cur_cost, cur_Node = heapq.heappop(open_list)
@@ -386,15 +398,19 @@ def A_starAlgo(Strt_x, Strt_y, Strt_theta, End_x, End_y, End_theta):
                 print("Goal Node reached.....")
                 
                 final_path = back_tracking(cur_Node)
-                return True
+                return True,all_nodes
+
 
             #creating child
             child = action(current_Node, goal, step_size)
 
+            par_child = [(current_Node[0][0], current_Node[0][1])]
+
             for tmp_node, child_cost in child:
 
                 child_node = (float("{:.1f}".format(tmp_node[0])), float("{:.1f}".format(tmp_node[1])), tmp_node[2])
-                
+
+                #print(child_node[0], child_node[1], child_node[2])
                 #check if the node is in closed list
                 if (roundOff(child_node[0]), roundOff(child_node[1])) in closed_list:
                     continue
@@ -407,6 +423,7 @@ def A_starAlgo(Strt_x, Strt_y, Strt_theta, End_x, End_y, End_theta):
                     Child_Node.total_cost = child_cost
                     Child_Node.parentNode = cur_Node
                     heapq.heappush(open_list, (Child_Node.total_cost, Child_Node))
+                    par_child.append((roundOff(child_node[0]), roundOff(child_node[1])))
 
                 else:
                     if(child_cost < cur_cost):
@@ -414,14 +431,18 @@ def A_starAlgo(Strt_x, Strt_y, Strt_theta, End_x, End_y, End_theta):
                         Child_Node.total_cost = child_cost
                         Child_Node.parentNode = cur_Node
                         heapq.heappush(open_list, (Child_Node.total_cost, Child_Node))
-    return False
+                        par_child.append((roundOff(child_node[0]), roundOff(child_node[1])))
+            all_nodes.append(par_child)
+    return False,all_nodes
 
 action_set = {}
 
 #Final path list
 final_path = []
 
-path = A_starAlgo(Strt_x, Strt_y, Strt_theta, End_x, End_y, End_theta)
+start = time.time()
+path,all_nodes = A_starAlgo(Strt_x, Strt_y, Strt_theta, End_x, End_y, End_theta)
+end = time.time()
 
 plot_path = []
 # Function to convert coords for pygame
@@ -439,8 +460,11 @@ else:
     print("Final Path is:\n")
     for x,y,theta in final_path:
         plot_path.append(conv_coords(roundOff(x),roundOff(y)))
-        print(x,y,theta)
+        #print(x,y,theta)
+        print(theta)
 
+
+print("Time taken:", (end-start))
 
 # Initialize Pygame
 pygame.init()
@@ -488,16 +512,29 @@ while running:
                 pygame.draw.rect(screen, color, (y,x,1,1))
 
     #Display start and goal node
-    pygame.draw.circle(screen, BLUE, (conv_coords(Strt_x, Strt_y)), 10)
+    #pygame.draw.circle(screen, BLUE, (conv_coords(Strt_x, Strt_y)), 10)
     pygame.draw.circle(screen, GREEN, (conv_coords(End_x, End_y)), 10)
 
 
     #Displaying final path
-    pygame.draw.lines(screen, RED, False, plot_path, 2)
+    # Draw lines connecting points
 
-    # Update the display
-    pygame.display.flip()
+    # Iterate over each list of points
+    for all_node in all_nodes:
+        # Draw lines connecting points
+        for i in range(1,len(all_node) ):
+            #pygame.draw.circle(screen, BLUE, (conv_coords(all_node[0][0],all_node[0][1])), 2)
+            pygame.draw.line(screen, BLUE,(conv_coords(all_node[0][0],all_node[0][1])) , (conv_coords(all_node[i][0],all_node[i][1])) , 2)
+            #time.sleep(0.000000005)
+            # Update the display
+
+    for i in range(len(plot_path) - 1):
+        pygame.draw.line(screen, RED, plot_path[i], plot_path[i + 1], 2)
+        time.sleep(0.1)
+        # Update the display
+        pygame.display.flip()
 
 # Quit Pygame
 pygame.quit()
 sys.exit()
+
