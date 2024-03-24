@@ -470,7 +470,7 @@ running = True
 
 #Saving video
 video_name = 'A_star_Anbarasan_ManojKumar.mp4'
-out = cv2.VideoWriter(video_name, cv2.VideoWriter_fourcc(*'MP4V'), 10, (Canvas_Width, Canvas_Height))
+out = cv2.VideoWriter(video_name, cv2.VideoWriter_fourcc(*'mp4v'), 10, (Canvas_Width, Canvas_Height))
 
 #Frames to store for video
 flag = 8000
