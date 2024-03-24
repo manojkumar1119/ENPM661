@@ -469,8 +469,8 @@ obs_matrix = obs_matrix[::-1]
 running = True
 
 #Saving video
-video_name = 'A_star_Anbarasan_ManojKumar.avi'
-out = cv2.VideoWriter(video_name, cv2.VideoWriter_fourcc(*'DIVX'), 10, (Canvas_Width, Canvas_Height))
+video_name = 'A_star_Anbarasan_ManojKumar.mp4'
+out = cv2.VideoWriter(video_name, cv2.VideoWriter_fourcc(*'XVID'), 10, (Canvas_Width, Canvas_Height))
 
 #Frames to store for video
 flag = 2000

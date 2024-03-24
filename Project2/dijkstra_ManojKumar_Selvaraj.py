@@ -424,8 +424,8 @@ video = explored_img + path_img
 height, width, _ = video[0].shape
 
 # Define fps and format
-fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-out = cv2.VideoWriter('./output_video.mp4', fourcc, 120, (width, height))
+fourcc = cv2.VideoWriter_fourcc(*'XVID')
+out = cv2.VideoWriter('./output_video.avi', fourcc, 120, (width, height))
 
 # Writing
 for image in video:
