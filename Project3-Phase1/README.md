@@ -73,3 +73,14 @@ YELLOW            --->          Final Path
 ## Github link:
 
 https://github.com/manojkumar1119/ENPM661/blob/main/Project3-Phase1
+
+## Authors:
+
+Manoj Kumar Selvaraj (120511257) 
+
+Directory Id:manojs
+
+
+Anbarasan Kandasamy  (120270697) 
+Directory Id:anbuk
+
