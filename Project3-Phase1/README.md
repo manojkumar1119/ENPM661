@@ -1,4 +1,4 @@
-# A star alogorithm
+# A star Algorithm
 
 ## System requirements
 
@@ -29,12 +29,19 @@ pygame
 2. Enter start_node, end_node, radius of the bot and clearance in the following order:
 
 `Enter Start x coordinates:15
+
 Enter Start y coordinates:15
+
 Enter Start degrees:0
+
 Enter End x coordinates:450
+
 Enter End y coordinates:250
+
 Enter End degrees:0
+
 Enter radius of robot:5
+
 Enter clearance of robot:5`
 
 3. To change the step size value, go to the line 14 (by default the step size value is 10)
@@ -60,6 +67,5 @@ BLUE              --->          Explored
 YELLOW            --->          Final Path
 
 ## Github link:
+
 https://github.com/manojkumar1119/ENPM661/blob/main/Project3-Phase1
-
-
