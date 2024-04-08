@@ -72,7 +72,7 @@ rclpy  ---> ROS2
 
 `cd ~\project3_ws`
 
-6. build --packages-select turtlebot3_project3
+`colcon build --packages-select turtlebot3_project3`
 
 7. Source file - `source install/setup.bash`
 
