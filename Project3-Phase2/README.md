@@ -28,7 +28,7 @@ rclpy  ---> ROS2
 
 ## Instructions to run the code:
 
-##Part01
+## Part01
 
 1. Run python3 proj3p2_Anbarasan_Manojkumar.py
 
@@ -56,7 +56,7 @@ rclpy  ---> ROS2
 
 5. Run A_star_Anbarasan_ManojKumar.mp4 to see the generated video
 
-##Part02
+## Part02
 
 1. Create workspace eg.`project3_ws`
 
@@ -118,7 +118,7 @@ YELLOW            --->          Final Path
 
 ## Github link:
 
-https://github.com/manojkumar1119/ENPM661/blob/main/Project3-Phase1
+https://github.com/manojkumar1119/ENPM661/tree/main/Project3-Phase2
 
 ## Authors:
 
