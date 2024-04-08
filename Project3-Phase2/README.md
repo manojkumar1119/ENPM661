@@ -98,7 +98,9 @@ Give the user inputs as shown for a test case
 
 `Enter right RPM: 20`
 
-A star algorithm will be executed and the action sets will be published to the cmd_vel topic
+A star algorithm will be executed and the action sets will be published to the cmd_vel topic. 
+
+Gazebo simulation shows the final action by the turtle bot from start to goal.
 
 ## Legend
 
