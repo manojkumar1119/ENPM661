@@ -18,7 +18,7 @@ This directory includes the implementation of the **A* (A-star) Algorithm**, a p
 ### **Project3-Phase2**
 In this phase, the **A* Algorithm** is applied specifically for path planning with a **TurtleBot**. It demonstrates how the A* algorithm can be integrated with robotics for autonomous navigation and obstacle avoidance.
 
-# Project4: Panda Robot Control with MoveIt
+### Project4: Panda Robot Control with MoveIt
 
 This project demonstrates controlling the **Panda robot** using **ROS2**, **MoveIt**, and **C++** scripts to move the robot between different states and handle gripper conditions.
 
