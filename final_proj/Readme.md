@@ -13,9 +13,9 @@ Below are the MP4 video demonstrations of each algorithm's execution. Click on t
     <th>Improved RRT-Connect Algorithm</th>
   </tr>
   <tr>
-    <td><video width="320" height="240" controls><source src="videos/RRT.mp4" type="video/mp4"></video></td>
-    <td><video width="320" height="240" controls><source src="videos/RRT-Connect.mp4" type="video/mp4"></video></td>
-    <td><video width="320" height="240" controls><source src="videos/Improved-RRT-Connect.mp4" type="video/mp4"></video></td>
+    <td><video width="320" height="240" controls><source src="RRT.mp4" type="video/mp4"></video></td>
+    <td><video width="320" height="240" controls><source src="RRT-Connect.mp4" type="video/mp4"></video></td>
+    <td><video width="320" height="240" controls><source src="Improved-RRT-Connect.mp4" type="video/mp4"></video></td>
   </tr>
 </table>
 
