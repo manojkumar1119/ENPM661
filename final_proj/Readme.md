@@ -13,7 +13,7 @@ Below are the GIF demonstrations of each algorithm's execution. Click on the GIF
     <th>Improved RRT-Connect Algorithm</th>
   </tr>
   <tr>
-    <td><img src="RRT.gif" width="320" height="240" alt="RRT Algorithm"></td>
+    <td><img src="rrt.gif" width="320" height="240" alt="RRT Algorithm"></td>
     <td><img src="RRT-Connect.gif" width="320" height="240" alt="RRT-Connect Algorithm"></td>
     <td><img src="Improved-RRT-Connect.gif" width="320" height="240" alt="Improved RRT-Connect Algorithm"></td>
   </tr>
