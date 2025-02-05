@@ -4,7 +4,7 @@ This repository contains a comparative analysis of various path planning algorit
 
 ## 📽 Algorithm Demonstrations
 
-Below are the MP4 video demonstrations of each algorithm's execution. Click on the videos to watch them in action.
+Below are the GIF demonstrations of each algorithm's execution. Click on the GIFs to watch them in action.
 
 <table>
   <tr>
@@ -13,14 +13,11 @@ Below are the MP4 video demonstrations of each algorithm's execution. Click on t
     <th>Improved RRT-Connect Algorithm</th>
   </tr>
   <tr>
-    <td><video width="320" height="240" controls><source src="RRT.mp4" type="video/mp4"></video></td>
-    <td><video width="320" height="240" controls><source src="RRT-Connect.mp4" type="video/mp4"></video></td>
-    <td><video width="320" height="240" controls><source src="Improved-RRT-Connect.mp4" type="video/mp4"></video></td>
+    <td><img src="RRT.gif" width="320" height="240" alt="RRT Algorithm"></td>
+    <td><img src="RRT-Connect.gif" width="320" height="240" alt="RRT-Connect Algorithm"></td>
+    <td><img src="Improved-RRT-Connect.gif" width="320" height="240" alt="Improved RRT-Connect Algorithm"></td>
   </tr>
 </table>
-
-<video width="320" height="240" controls><source src="RRT.mp4" type="video/mp4"></video></td>
-
 ---
 
 ## 📌 Introduction
