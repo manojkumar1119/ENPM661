@@ -1,4 +1,4 @@
-# 🚀 Path Planning and Algorithms Repository
+# 🚀 ENPM661 Repository
 
 This repository contains solutions for various algorithms and projects related to path planning and puzzle-solving problems. Below is an overview of each directory and its corresponding solution.
 
